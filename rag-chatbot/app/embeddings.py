@@ -1,10 +1,11 @@
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_core.embeddings import Embeddings
 from langchain_openai import OpenAIEmbeddings
 
 from app import config
 
 
-def get_embeddings():
+def get_embeddings() -> Embeddings:
     """Return a configured embeddings provider (OpenAI or Hugging Face)."""
     provider = config.EMBEDDINGS_PROVIDER.lower()
     if provider == "huggingface":
