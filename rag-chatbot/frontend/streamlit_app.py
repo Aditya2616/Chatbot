@@ -48,8 +48,7 @@ st.caption("Upload documents from the sidebar and chat with your knowledge base.
 
 api_url = st.sidebar.text_input("API URL", key="api_url")
 api_url = api_url.rstrip("/")
-if st.session_state.api_url != api_url:
-    st.session_state.api_url = api_url
+st.session_state.api_url = api_url
 
 st.sidebar.subheader("Chat settings")
 top_k = st.sidebar.number_input("Top K results", min_value=1, max_value=20, value=4)
@@ -119,7 +118,7 @@ if prompt:
     payload = {
         "question": prompt,
         "session_id": st.session_state.session_id,
-        "top_k": int(top_k),
+        "top_k": top_k,
         "use_history": use_history,
         "return_sources": return_sources,
     }
