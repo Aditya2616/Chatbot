@@ -22,6 +22,10 @@ def show_response_error(response: requests.Response) -> None:
     st.error(get_error_detail(response))
 
 
+def normalize_api_url() -> None:
+    st.session_state.api_url = st.session_state.api_url.rstrip("/")
+
+
 def init_state() -> None:
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -29,10 +33,7 @@ def init_state() -> None:
         st.session_state.session_id = str(uuid.uuid4())
     if "api_url" not in st.session_state:
         st.session_state.api_url = DEFAULT_API_URL
-
-
-def normalize_api_url() -> None:
-    st.session_state.api_url = st.session_state.api_url.rstrip("/")
+    normalize_api_url()
 
 
 def render_sources(sources: List[Dict]) -> None:
@@ -50,7 +51,6 @@ def render_sources(sources: List[Dict]) -> None:
 
 
 init_state()
-normalize_api_url()
 
 st.title("LLM-Powered RAG Chatbot")
 st.caption("Upload documents from the sidebar and chat with your knowledge base.")
@@ -59,7 +59,9 @@ st.sidebar.text_input("API URL", key="api_url", on_change=normalize_api_url)
 api_url = st.session_state.api_url
 
 st.sidebar.subheader("Chat settings")
-top_k = st.sidebar.number_input("Top K results", min_value=1, max_value=20, value=4)
+top_k_results = st.sidebar.number_input(
+    "Top K results", min_value=1, max_value=20, value=4
+)
 use_history = st.sidebar.checkbox("Use chat history", value=True)
 return_sources = st.sidebar.checkbox("Return sources", value=True)
 
@@ -126,7 +128,7 @@ if prompt:
     payload = {
         "question": prompt,
         "session_id": st.session_state.session_id,
-        "top_k": top_k,
+        "top_k": top_k_results,
         "use_history": use_history,
         "return_sources": return_sources,
     }
