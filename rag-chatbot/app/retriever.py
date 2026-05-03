@@ -11,7 +11,18 @@ INDEX_FILES = ["index.faiss", "index.pkl"]
 
 
 def _vector_store_exists(path: Path) -> bool:
-    return all((path / filename).exists() for filename in INDEX_FILES)
+    return _index_files_safe(path)
+
+
+def _index_files_safe(path: Path) -> bool:
+    for filename in INDEX_FILES:
+        file_path = path / filename
+        if not file_path.exists() or not file_path.is_file():
+            return False
+        if file_path.is_symlink():
+            logging.warning("Refusing to load vector store from symlink: %s", file_path)
+            return False
+    return True
 
 
 class VectorStoreManager:

@@ -25,6 +25,7 @@ CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
 TOP_K = int(os.getenv("TOP_K", "4"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0"))
 MAX_HISTORY_TURNS = int(os.getenv("MAX_HISTORY_TURNS", "5"))
+SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", "3600"))
 
 CACHE_MAXSIZE = int(os.getenv("CACHE_MAXSIZE", "256"))
 CACHE_TTL_SECONDS = int(os.getenv("CACHE_TTL_SECONDS", "3600"))

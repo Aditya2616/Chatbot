@@ -29,7 +29,7 @@ rag-chatbot/
 │   └── vector_store/
 ├── frontend/
 │   └── streamlit_app.py
-├── .env
+├── .env (create from .env.example)
 ├── .env.example
 ├── requirements.txt
 └── Dockerfile
@@ -105,6 +105,7 @@ streamlit run frontend/streamlit_app.py
 
 ## Caching & Logging
 - In-memory LRU cache for repeated queries (configurable TTL).
+- Session history expires automatically (configurable TTL).
 - Logs each query and response via standard logging output.
 
 ## Docker

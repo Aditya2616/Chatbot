@@ -67,6 +67,7 @@ class RAGPipeline:
         )
         self.cache = QueryCache(config.CACHE_MAXSIZE, config.CACHE_TTL_SECONDS)
         self.history: Dict[str, List[Tuple[str, str]]] = {}
+        self.session_last_seen: Dict[str, float] = {}
 
     def clear_cache(self) -> None:
         self.cache.clear()
@@ -82,6 +83,7 @@ class RAGPipeline:
         if not normalized_question:
             raise ValueError("Question cannot be empty")
 
+        self._prune_sessions()
         history_items = self._get_history(session_id) if use_history else []
         history_text = self._format_history(history_items)
         cache_key = (
@@ -134,11 +136,35 @@ class RAGPipeline:
         session_history.append((question, answer))
         session_history = session_history[-config.MAX_HISTORY_TURNS :]
         self.history[session_id] = session_history
+        self.session_last_seen[session_id] = time.time()
 
     def _get_history(self, session_id: Optional[str]) -> List[Tuple[str, str]]:
         if not session_id:
             return []
+        if self._is_session_expired(session_id):
+            self.history.pop(session_id, None)
+            self.session_last_seen.pop(session_id, None)
+            return []
         return self.history.get(session_id, [])
+
+    def _is_session_expired(self, session_id: str) -> bool:
+        last_seen = self.session_last_seen.get(session_id)
+        if last_seen is None:
+            return False
+        return time.time() - last_seen > config.SESSION_TTL_SECONDS
+
+    def _prune_sessions(self) -> None:
+        if not self.session_last_seen:
+            return
+        now = time.time()
+        expired = [
+            session_id
+            for session_id, last_seen in self.session_last_seen.items()
+            if now - last_seen > config.SESSION_TTL_SECONDS
+        ]
+        for session_id in expired:
+            self.history.pop(session_id, None)
+            self.session_last_seen.pop(session_id, None)
 
     def _extract_sources(self, documents: List) -> List[Dict]:
         sources = []

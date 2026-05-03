@@ -5,6 +5,7 @@ from app import config
 
 
 def get_embeddings():
+    """Return a configured embeddings provider (OpenAI or Hugging Face)."""
     provider = config.EMBEDDINGS_PROVIDER.lower()
     if provider == "huggingface":
         return HuggingFaceEmbeddings(model_name=config.HUGGINGFACE_MODEL)
