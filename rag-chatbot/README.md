@@ -36,21 +36,26 @@ rag-chatbot/
 ```
 
 ## Setup (Local)
-1. **Create a virtual environment**
+1. **Change into the project directory**
+   ```bash
+   cd rag-chatbot
+   ```
+2. **Create a virtual environment**
    ```bash
    python -m venv .venv
    source .venv/bin/activate
    ```
-2. **Install dependencies**
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
-3. **Configure environment**
+4. **Configure environment**
    ```bash
    cp .env.example .env
-   # Edit .env and add your OPENAI_API_KEY
+   # Edit .env and add your OPENAI_API_KEY (do not hardcode keys in code)
    ```
-4. **Run the API**
+   The API reads keys from environment variables or `.env` only.
+5. **Run the API**
    ```bash
    uvicorn app.main:app --reload
    ```
@@ -75,6 +80,7 @@ curl http://localhost:8000/health
 ```
 
 ## Streamlit UI (Optional)
+Run the API first, then launch the chat-style UI:
 ```bash
 streamlit run frontend/streamlit_app.py
 ```
