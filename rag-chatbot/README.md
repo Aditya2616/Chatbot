@@ -36,7 +36,7 @@ rag-chatbot/
 ```
 
 ## Setup (Local)
-1. **Ensure you're in the project directory**
+1. **Change into the project directory**
    ```bash
    cd rag-chatbot
    ```

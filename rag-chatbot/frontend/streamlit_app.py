@@ -4,6 +4,8 @@ from typing import Dict, List
 import requests
 import streamlit as st
 
+st.set_page_config(page_title="RAG Chatbot", page_icon="💬", layout="wide")
+
 DEFAULT_API_URL = "http://localhost:8000"
 
 
@@ -41,13 +43,13 @@ def render_sources(sources: List[Dict]) -> None:
 
 init_state()
 
-st.set_page_config(page_title="RAG Chatbot", page_icon="💬", layout="wide")
-
 st.title("LLM-Powered RAG Chatbot")
 st.caption("Upload documents from the sidebar and chat with your knowledge base.")
 
 api_url = st.sidebar.text_input("API URL", key="api_url")
 api_url = api_url.rstrip("/")
+if st.session_state.api_url != api_url:
+    st.session_state.api_url = api_url
 
 st.sidebar.subheader("Chat settings")
 top_k = st.sidebar.number_input("Top K results", min_value=1, max_value=20, value=4)
