@@ -2,8 +2,7 @@ fastapi==0.115.0
 uvicorn==0.30.6
 langchain==0.3.27
 langchain-community==0.3.27
-langchain-openai==0.2.12
-openai==1.40.2
+langchain-google-genai==2.0.9
 faiss-cpu==1.8.0
 pypdf==4.2.0
 docx2txt==0.8
@@ -11,4 +10,3 @@ python-dotenv==1.0.1
 python-multipart==0.0.22
 streamlit==1.37.1
 requests==2.32.3
-tiktoken==0.7.0

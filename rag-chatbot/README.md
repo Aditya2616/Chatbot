@@ -5,7 +5,7 @@ A production-ready, domain-specific Q&A chatbot using Retrieval-Augmented Genera
 ## Features
 - Document ingestion for PDF, TXT, DOCX
 - Chunking with `RecursiveCharacterTextSplitter`
-- Embeddings via OpenAI or Hugging Face
+- Embeddings via Gemini or Hugging Face
 - FAISS vector store with local persistence
 - Strict, context-grounded RAG prompt ("I don't know" fallback)
 - FastAPI endpoints: `/query`, `/upload`, `/health`
@@ -52,7 +52,7 @@ rag-chatbot/
 4. **Configure environment**
    ```bash
    cp .env.example .env
-   # Edit .env and add your OPENAI_API_KEY (do not hardcode keys in code)
+   # Edit .env and add your GEMINI_API_KEY (do not hardcode keys in code)
    ```
    The API reads keys from environment variables or `.env` only.
 5. **Run the API**
