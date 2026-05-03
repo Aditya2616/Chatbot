@@ -14,7 +14,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
 EMBEDDINGS_PROVIDER = os.getenv("EMBEDDINGS_PROVIDER", "gemini")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/text-embedding-004")
 HUGGINGFACE_MODEL = os.getenv(
     "HUGGINGFACE_MODEL",
     "sentence-transformers/all-MiniLM-L6-v2",
