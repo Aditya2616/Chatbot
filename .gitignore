@@ -1,0 +1,13 @@
+# Environment
+rag-chatbot/.env
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Data artifacts
+rag-chatbot/data/raw_docs/*
+!rag-chatbot/data/raw_docs/.gitkeep
+rag-chatbot/data/vector_store/*
+!rag-chatbot/data/vector_store/.gitkeep
