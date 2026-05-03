@@ -183,5 +183,6 @@ class RAGPipeline:
         max_length = config.SNIPPET_LENGTH
         if len(text) <= max_length:
             return text
-        truncated = text[:max_length].rsplit(" ", 1)[0]
-        return truncated or text[:max_length]
+        prefix = text[:max_length]
+        split = prefix.rsplit(" ", 1)
+        return split[0] if len(split) > 1 else prefix
