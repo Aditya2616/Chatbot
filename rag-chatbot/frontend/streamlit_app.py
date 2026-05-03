@@ -23,10 +23,14 @@ def show_response_error(response: requests.Response) -> None:
 
 
 def normalize_api_url() -> None:
+    """Normalize the API URL stored in session state."""
+    if "api_url" not in st.session_state:
+        return
     st.session_state.api_url = st.session_state.api_url.rstrip("/")
 
 
 def init_state() -> None:
+    """Initialize session state for chat messages, session ID, and API URL."""
     if "messages" not in st.session_state:
         st.session_state.messages = []
     if "session_id" not in st.session_state:
@@ -37,6 +41,10 @@ def init_state() -> None:
 
 
 def render_sources(sources: List[Dict]) -> None:
+    """Render source metadata/snippets in an expandable section.
+
+    Each source dict may include `source`, `page`, and `snippet` keys.
+    """
     if not sources:
         return
     with st.expander("Sources"):
