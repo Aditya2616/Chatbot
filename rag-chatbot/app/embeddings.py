@@ -8,9 +8,9 @@ from app import config
 def get_embeddings() -> Embeddings:
     """Return a configured embeddings provider (Gemini or Hugging Face)."""
     provider = config.EMBEDDINGS_PROVIDER.lower()
-    if provider not in {"huggingface", "gemini", "google"}:
+    if provider not in {"huggingface", "gemini"}:
         raise ValueError(
-            "Unsupported embeddings provider; use 'gemini', 'google', or 'huggingface'"
+            "Unsupported embeddings provider; use 'gemini' or 'huggingface'"
         )
     if provider == "huggingface":
         return HuggingFaceEmbeddings(model_name=config.HUGGINGFACE_MODEL)
