@@ -174,7 +174,14 @@ class RAGPipeline:
                 {
                     "source": metadata.get("source"),
                     "page": metadata.get("page"),
-                    "snippet": doc.page_content[: config.SNIPPET_LENGTH],
+                    "snippet": self._truncate_text(doc.page_content),
                 }
             )
         return sources
+
+    def _truncate_text(self, text: str) -> str:
+        max_length = config.SNIPPET_LENGTH
+        if len(text) <= max_length:
+            return text
+        truncated = text[:max_length].rsplit(" ", 1)[0]
+        return truncated or text[:max_length]

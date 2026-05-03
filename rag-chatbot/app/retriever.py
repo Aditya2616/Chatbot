@@ -7,15 +7,11 @@ from langchain_core.documents import Document
 
 from app import config
 
-INDEX_FILES = ["index.faiss", "index.pkl"]
-
-
-def _vector_store_exists(path: Path) -> bool:
-    return _index_files_safe(path)
+FAISS_INDEX_FILENAMES = ["index.faiss", "index.pkl"]
 
 
 def _index_files_safe(path: Path) -> bool:
-    for filename in INDEX_FILES:
+    for filename in FAISS_INDEX_FILENAMES:
         file_path = path / filename
         if not file_path.exists() or not file_path.is_file():
             return False
@@ -32,7 +28,7 @@ class VectorStoreManager:
         self.version = 0
 
     def load(self) -> Optional[FAISS]:
-        if _vector_store_exists(config.VECTOR_STORE_DIR):
+        if _index_files_safe(config.VECTOR_STORE_DIR):
             self.vector_store = FAISS.load_local(
                 str(config.VECTOR_STORE_DIR),
                 self.embeddings,
@@ -44,7 +40,7 @@ class VectorStoreManager:
     def create_or_update(self, documents: List[Document]) -> int:
         if not documents:
             return 0
-        if self.vector_store is None and _vector_store_exists(config.VECTOR_STORE_DIR):
+        if self.vector_store is None and _index_files_safe(config.VECTOR_STORE_DIR):
             self.load()
         if self.vector_store is None:
             self.vector_store = FAISS.from_documents(documents, self.embeddings)
@@ -67,4 +63,4 @@ class VectorStoreManager:
         return self.vector_store.similarity_search(query, k=k)
 
     def has_index(self) -> bool:
-        return _vector_store_exists(config.VECTOR_STORE_DIR)
+        return _index_files_safe(config.VECTOR_STORE_DIR)
