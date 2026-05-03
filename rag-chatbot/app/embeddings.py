@@ -8,12 +8,12 @@ from app import config
 def get_embeddings() -> Embeddings:
     """Return a configured embeddings provider (Gemini or Hugging Face)."""
     provider = config.EMBEDDINGS_PROVIDER.lower()
-    if provider == "huggingface":
-        return HuggingFaceEmbeddings(model_name=config.HUGGINGFACE_MODEL)
-    if provider not in {"gemini", "google"}:
+    if provider not in {"huggingface", "gemini", "google"}:
         raise ValueError(
             "Unsupported embeddings provider; use 'gemini', 'google', or 'huggingface'"
         )
+    if provider == "huggingface":
+        return HuggingFaceEmbeddings(model_name=config.HUGGINGFACE_MODEL)
     if not config.GEMINI_API_KEY:
         raise ValueError("GEMINI_API_KEY is required for Gemini embeddings")
     return GoogleGenerativeAIEmbeddings(
