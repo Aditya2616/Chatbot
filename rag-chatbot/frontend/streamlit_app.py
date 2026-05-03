@@ -29,6 +29,7 @@ def init_state() -> None:
         st.session_state.session_id = str(uuid.uuid4())
     if "api_url" not in st.session_state:
         st.session_state.api_url = DEFAULT_API_URL
+    st.session_state.api_url = st.session_state.api_url.rstrip("/")
 
 
 def normalize_api_url() -> None:
@@ -50,7 +51,6 @@ def render_sources(sources: List[Dict]) -> None:
 
 
 init_state()
-normalize_api_url()
 
 st.title("LLM-Powered RAG Chatbot")
 st.caption("Upload documents from the sidebar and chat with your knowledge base.")
@@ -137,9 +137,10 @@ if prompt:
                 response = requests.post(f"{api_url}/query", json=payload, timeout=120)
             except requests.RequestException as exc:
                 error_message = str(exc)
-                st.markdown(f"⚠️ {error_message}")
+                error_display = f"⚠️ {error_message}"
+                st.markdown(error_display)
                 st.session_state.messages.append(
-                    {"role": "assistant", "content": f"Error: {error_message}"}
+                    {"role": "assistant", "content": error_display}
                 )
             else:
                 if response.ok:
@@ -161,7 +162,8 @@ if prompt:
                     )
                 else:
                     error_detail = get_error_detail(response)
-                    st.markdown(f"⚠️ {error_detail}")
+                    error_display = f"⚠️ {error_detail}"
+                    st.markdown(error_display)
                     st.session_state.messages.append(
-                        {"role": "assistant", "content": f"Error: {error_detail}"}
+                        {"role": "assistant", "content": error_display}
                     )
