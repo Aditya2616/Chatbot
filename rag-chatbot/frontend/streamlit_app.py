@@ -9,13 +9,17 @@ st.set_page_config(page_title="RAG Chatbot", page_icon="💬", layout="wide")
 DEFAULT_API_URL = "http://localhost:8000"
 
 
-def show_response_error(response: requests.Response) -> None:
+def get_error_detail(response: requests.Response) -> str:
     try:
         payload = response.json()
         detail = payload.get("detail") or payload.get("message")
     except ValueError:
         detail = response.text
-    st.error(detail or "Request failed.")
+    return detail or "Request failed."
+
+
+def show_response_error(response: requests.Response) -> None:
+    st.error(get_error_detail(response))
 
 
 def init_state() -> None:
@@ -25,6 +29,10 @@ def init_state() -> None:
         st.session_state.session_id = str(uuid.uuid4())
     if "api_url" not in st.session_state:
         st.session_state.api_url = DEFAULT_API_URL
+
+
+def normalize_api_url() -> None:
+    st.session_state.api_url = st.session_state.api_url.rstrip("/")
 
 
 def render_sources(sources: List[Dict]) -> None:
@@ -42,13 +50,13 @@ def render_sources(sources: List[Dict]) -> None:
 
 
 init_state()
+normalize_api_url()
 
 st.title("LLM-Powered RAG Chatbot")
 st.caption("Upload documents from the sidebar and chat with your knowledge base.")
 
-api_url = st.sidebar.text_input("API URL", key="api_url")
-api_url = api_url.rstrip("/")
-st.session_state.api_url = api_url
+api_url = st.sidebar.text_input("API URL", key="api_url", on_change=normalize_api_url)
+api_url = st.session_state.api_url
 
 st.sidebar.subheader("Chat settings")
 top_k = st.sidebar.number_input("Top K results", min_value=1, max_value=20, value=4)
@@ -129,7 +137,7 @@ if prompt:
                 response = requests.post(f"{api_url}/query", json=payload, timeout=120)
             except requests.RequestException as exc:
                 error_message = str(exc)
-                st.error(error_message)
+                st.markdown(f"⚠️ {error_message}")
                 st.session_state.messages.append(
                     {"role": "assistant", "content": f"Error: {error_message}"}
                 )
@@ -152,7 +160,8 @@ if prompt:
                         }
                     )
                 else:
-                    show_response_error(response)
+                    error_detail = get_error_detail(response)
+                    st.markdown(f"⚠️ {error_detail}")
                     st.session_state.messages.append(
-                        {"role": "assistant", "content": "Request failed."}
+                        {"role": "assistant", "content": f"Error: {error_detail}"}
                     )
