@@ -10,11 +10,11 @@ DATA_DIR = BASE_DIR / "data"
 RAW_DOCS_DIR = DATA_DIR / "raw_docs"
 VECTOR_STORE_DIR = DATA_DIR / "vector_store"
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
-EMBEDDINGS_PROVIDER = os.getenv("EMBEDDINGS_PROVIDER", "openai")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+EMBEDDINGS_PROVIDER = os.getenv("EMBEDDINGS_PROVIDER", "gemini")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/text-embedding-004")
 HUGGINGFACE_MODEL = os.getenv(
     "HUGGINGFACE_MODEL",
     "sentence-transformers/all-MiniLM-L6-v2",

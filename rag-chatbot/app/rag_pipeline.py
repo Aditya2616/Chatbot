@@ -4,7 +4,7 @@ from collections import OrderedDict
 from typing import Dict, List, Optional, Tuple
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app import config
 from app.retriever import VectorStoreManager
@@ -47,13 +47,13 @@ class QueryCache:
 
 class RAGPipeline:
     def __init__(self, vector_store_manager: VectorStoreManager) -> None:
-        if not config.OPENAI_API_KEY:
-            raise ValueError("OPENAI_API_KEY is required to initialize the LLM")
+        if not config.GEMINI_API_KEY:
+            raise ValueError("GEMINI_API_KEY is required to initialize the LLM")
         self.vector_store_manager = vector_store_manager
-        self.llm = ChatOpenAI(
-            model=config.OPENAI_MODEL,
+        self.llm = ChatGoogleGenerativeAI(
+            model=config.GEMINI_MODEL,
             temperature=config.TEMPERATURE,
-            openai_api_key=config.OPENAI_API_KEY,
+            google_api_key=config.GEMINI_API_KEY,
         )
         self.prompt = ChatPromptTemplate.from_messages(
             [
