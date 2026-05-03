@@ -49,12 +49,15 @@ class RAGPipeline:
     def __init__(self, vector_store_manager: VectorStoreManager) -> None:
         if not config.GEMINI_API_KEY:
             raise ValueError("GEMINI_API_KEY is required to initialize the LLM")
+
         self.vector_store_manager = vector_store_manager
+
         self.llm = ChatGoogleGenerativeAI(
-            model=config.GEMINI_MODEL,
+            model=config.GEMINI_MODEL,  # reads from .env
             temperature=config.TEMPERATURE,
             google_api_key=config.GEMINI_API_KEY,
         )
+
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", SYSTEM_PROMPT),
@@ -65,6 +68,7 @@ class RAGPipeline:
                 ),
             ]
         )
+
         self.cache = QueryCache(config.CACHE_MAXSIZE, config.CACHE_TTL_SECONDS)
         self.history: Dict[str, List[Tuple[str, str]]] = {}
         self.session_last_seen: Dict[str, float] = {}
@@ -79,19 +83,23 @@ class RAGPipeline:
         session_id: Optional[str] = None,
         use_history: bool = True,
     ) -> Tuple[str, List[Dict], bool]:
+
         normalized_question = question.strip()
         if not normalized_question:
             raise ValueError("Question cannot be empty")
 
         self._prune_sessions()
+
         history_items = self._get_history(session_id) if use_history else []
         history_text = self._format_history(history_items)
+
         cache_key = (
             self.vector_store_manager.version,
             normalized_question,
             top_k or config.TOP_K,
             history_text,
         )
+
         cached = self.cache.get(cache_key)
         if cached:
             return cached["answer"], cached["sources"], True
@@ -100,26 +108,34 @@ class RAGPipeline:
             normalized_question,
             top_k=top_k,
         )
+
+        # ✅ Safe fallback (prevents crashes)
         if not documents:
             answer = "I don't know"
             sources: List[Dict] = []
         else:
             context = self._format_context(documents)
+
             prompt_messages = self.prompt.format_messages(
                 context=context,
                 history=history_text or "None",
                 question=normalized_question,
             )
+
             response = self.llm.invoke(prompt_messages)
-            answer = response.content.strip()
+            content = response.content
+            answer = (content if isinstance(content, str) else content[0].get("text", "")).strip()
+
             sources = self._extract_sources(documents)
 
         logger.info("Query: %s | Answer: %s", normalized_question, answer)
+
         if session_id and use_history:
             self._append_history(session_id, normalized_question, answer)
 
         payload = {"answer": answer, "sources": sources}
         self.cache.set(cache_key, payload)
+
         return answer, sources, False
 
     def _format_context(self, documents: List) -> str:

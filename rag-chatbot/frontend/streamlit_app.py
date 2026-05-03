@@ -128,11 +128,14 @@ for message in st.session_state.messages:
             render_sources(message.get("sources", []))
 
 prompt = st.chat_input("Ask a question")
+
 if prompt:
+    # user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # payload MUST be here
     payload = {
         "question": prompt,
         "session_id": st.session_state.session_id,
@@ -141,39 +144,37 @@ if prompt:
         "return_sources": return_sources,
     }
 
+    # assistant response
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
-                response = requests.post(f"{api_url}/query", json=payload, timeout=120)
-            except requests.RequestException as exc:
-                error_message = str(exc)
-                error_display = f"⚠️ {error_message}"
-                st.markdown(error_display)
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": error_display}
+                response = requests.post(
+                    f"{api_url}/query",
+                    json=payload,
+                    timeout=120
                 )
-            else:
+
                 if response.ok:
                     result = response.json()
-                    answer = result.get("answer") or "No response."
-                    sources = result.get("sources") or []
+                    answer = result.get("answer", "No response")
+                    sources = result.get("sources", [])
                     cached = result.get("cached", False)
+
                     st.markdown(answer)
+
                     if cached:
                         st.caption("Cached response")
+
                     render_sources(sources)
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": answer,
-                            "sources": sources,
-                            "cached": cached,
-                        }
-                    )
+
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": answer,
+                        "sources": sources,
+                        "cached": cached,
+                    })
                 else:
-                    error_detail = get_error_detail(response)
-                    error_display = f"⚠️ {error_detail}"
-                    st.markdown(error_display)
-                    st.session_state.messages.append(
-                        {"role": "assistant", "content": error_display}
-                    )
+                    st.error(response.text)
+
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
