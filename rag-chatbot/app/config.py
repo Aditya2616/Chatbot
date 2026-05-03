@@ -29,5 +29,6 @@ SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", "3600"))
 
 CACHE_MAXSIZE = int(os.getenv("CACHE_MAXSIZE", "256"))
 CACHE_TTL_SECONDS = int(os.getenv("CACHE_TTL_SECONDS", "3600"))
+SNIPPET_LENGTH = int(os.getenv("SNIPPET_LENGTH", "200"))
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")

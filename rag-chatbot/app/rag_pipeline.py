@@ -174,7 +174,7 @@ class RAGPipeline:
                 {
                     "source": metadata.get("source"),
                     "page": metadata.get("page"),
-                    "snippet": doc.page_content[:200],
+                    "snippet": doc.page_content[: config.SNIPPET_LENGTH],
                 }
             )
         return sources
